@@ -45,8 +45,9 @@ client.on('messageCreate', async (message) => {
     if (channelId === channels.dailyLog) {
         missionData[userId][today].daily = true;
     } else if (message.type === 19 && message.channel.isThread()) { // 스레드 메시지인지 확인
-        const threadOwner = message.channel.ownerId;
-        if (threadOwner !== userId) { // 자신의 스레드가 아닐 때만 인정
+        const threadOriginalAuthor = (await message.channel.fetchStarterMessage())?.author.id;
+
+        if (threadOriginalAuthor !== userId) { // 원글 작성자와 댓글 작성자가 다를 때만 인정
             missionData[userId][today].weekly.add(message.channel.id); // 다른 스레드에 남긴 경우만 추가
         }
     } else if (channelId === channels.weeklyReview) {
